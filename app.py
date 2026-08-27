@@ -339,15 +339,16 @@ with tab2:
     with diag_col1:
         comp_path = os.path.join(OUTPUTS_DIR, f"model_comparison_{commodity_slug}.png")
         if os.path.exists(comp_path):
-            st.image(comp_path, use_column_width=True, caption=f"{selected_commodity} - Model Metrics Comparison")
+            st.image(comp_path, use_container_width=True, caption=f"{selected_commodity} - Model Metrics Comparison")
         else:
             st.info("Model comparison plot not found. Run pipeline to generate it.")
 
     with diag_col2:
         feat_path = os.path.join(OUTPUTS_DIR, f"feature_importance_{commodity_slug}.png")
         if os.path.exists(feat_path):
-            st.image(feat_path, use_column_width=True, caption=f"{selected_commodity} - XGBoost Feature Importance")
+            st.image(feat_path, use_container_width=True, caption=f"{selected_commodity} - XGBoost Feature Importance")
         else:
             st.info("Feature importance plot not found. Run pipeline to generate it.")
 
 st.caption(f"Last refreshed: {datetime.now().strftime('%d %b %Y, %I:%M %p')}")
+
