@@ -12,7 +12,7 @@
 **AI/ML based price prediction system for agri-horticultural commodities**  
 *Built for Smart India Hackathon 2024 | Ministry of Consumer Affairs, Food and Public Distribution*
 
-🔗 **Live Deployment**: [https://agriprice-ai.streamlit.app](https://agriprice-ai.streamlit.app) *(or your deployed Streamlit Community Cloud URL)*
+🔗 **Live Deployed App**: [https://agriprice-ai-commodity-price-prediction.onrender.com](https://agriprice-ai-commodity-price-prediction.onrender.com)
 
 </div>
 
