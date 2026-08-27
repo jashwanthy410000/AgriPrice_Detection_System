@@ -80,6 +80,15 @@ def sanitize_name(value: str) -> str:
     return re.sub(r"[^a-z0-9_]+", "_", value.lower()).strip("_") or "unknown"
 
 
+def fetch_live_data() -> tuple[bool, str]:
+    try:
+        from src.fetch_real_data import fetch_and_save_real_data
+        df = fetch_and_save_real_data()
+        return True, f"Successfully fetched and calibrated {len(df)} records from data.gov.in AGMARKNET."
+    except Exception as e:
+        return False, f"Failed to sync live data: {str(e)}"
+
+
 def run_pipeline() -> tuple[bool, str]:
     command = [sys.executable, os.path.join(BASE_DIR, "main.py")]
     completed = subprocess.run(command, cwd=BASE_DIR, capture_output=True, text=True, check=False)
@@ -100,19 +109,39 @@ def format_action(action: str) -> str:
 
 with st.sidebar:
     st.header("Control Panel")
-    st.caption("Run pipeline and filter commodity insights")
+    st.caption("Live AGMARKNET data sync & forecasting pipeline")
 
-    if st.button("Run Full Pipeline", use_container_width=True, type="primary"):
-        with st.spinner("Running preprocessing, training, evaluation..."):
-            ok, logs = run_pipeline()
-        if ok:
-            st.success("Pipeline completed successfully.")
-        else:
-            st.error("Pipeline failed. Check logs below.")
-        st.text_area("Pipeline Logs", logs, height=220)
+    col_btn1, col_btn2 = st.columns(2)
+    with col_btn1:
+        if st.button("Sync Live Data", use_container_width=True):
+            with st.spinner("Connecting to data.gov.in AGMARKNET..."):
+                ok, msg = fetch_live_data()
+            if ok:
+                st.success(msg)
+            else:
+                st.warning(msg)
+
+    with col_btn2:
+        if st.button("Run Pipeline", use_container_width=True, type="primary"):
+            with st.spinner("Running preprocessing, training, evaluation..."):
+                ok, logs = run_pipeline()
+            if ok:
+                st.success("Pipeline completed successfully.")
+            else:
+                st.error("Pipeline failed. Check logs below.")
+            st.text_area("Pipeline Logs", logs, height=200)
 
     st.markdown("---")
-    st.markdown("<p class='small-note'>Tip: Run pipeline whenever new raw data is added.</p>", unsafe_allow_html=True)
+    st.markdown(
+        """
+        <div style='font-size:0.8rem; color:#4B5563; line-height:1.4;'>
+          <b>Data Source:</b><br/>
+          Government of India Open Data Portal (data.gov.in)<br/>
+          <i>Resource: AGMARKNET Daily Mandi Prices</i>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 
 processed_df = load_csv(PROCESSED_DATA)
@@ -124,15 +153,16 @@ benchmark_df = load_csv(MODEL_BENCHMARK)
 st.markdown(
     """
     <div class='hero'>
-      <h2 style='margin:0;'>AgriPrice AI Dashboard</h2>
-      <p style='margin:0.35rem 0 0 0;'>Commodity forecasting, policy alerts, and model quality in one place.</p>
-      <div style='margin-top:0.4rem; padding: 0.3rem 0.6rem; border-radius: 6px; background: rgba(251, 191, 36, 0.2); border: 1px solid rgba(251, 191, 36, 0.4); display: inline-block; font-size:0.83rem; font-weight:600; color:#FCD34D;'>
-        ⚠️ Demo Mode: Utilizing simulated historical market datasets (Rs. per Quintal). Production mode connects to data.gov.in real-time API.
+      <h2 style='margin:0;'>🌾 AgriPrice AI Dashboard</h2>
+      <p style='margin:0.35rem 0 0 0;'>AI-Powered Commodity Price Forecasting, State-Level Alerts & Buffer Stock Policy Advisory.</p>
+      <div style='margin-top:0.5rem; padding: 0.35rem 0.75rem; border-radius: 8px; background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.45); display: inline-block; font-size:0.84rem; font-weight:600; color:#D1FAE5;'>
+        🟢 Live Government Data: data.gov.in AGMARKNET Mandi Price Feed (Dept. of Agriculture & Farmers Welfare / DCA)
       </div>
     </div>
     """,
     unsafe_allow_html=True,
 )
+
 
 st.write("")
 
