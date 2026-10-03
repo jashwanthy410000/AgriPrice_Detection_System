@@ -1,4 +1,4 @@
-# 🌾 AgriPrice AI — Commodity Price Prediction System
+# 🌾 AgriPrice — AI Commodity Price Prediction & Detection System
 
 <div align="center">
 
@@ -9,17 +9,15 @@
 ![Data Source](https://img.shields.io/badge/Data_Source-data.gov.in_AGMARKNET-emerald?style=for-the-badge)
 ![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)
 
-**AI/ML based price prediction system for agri-horticultural commodities**  
+**AI/ML based price prediction & anomaly detection system for agri-horticultural commodities**  
 *Built for Smart India Hackathon 2024 | Ministry of Consumer Affairs, Food and Public Distribution*
-
-🔗 **Live Deployed App**: [https://agriprice-ai-commodity-price-prediction.onrender.com](https://agriprice-ai-commodity-price-prediction.onrender.com)
 
 </div>
 
 ---
 
 > [!TIP]
-> **Real Government Data Ingestion**: AgriPrice AI connects directly to the Government of India Open Data Platform (**data.gov.in**) AGMARKNET Mandi Price API (*Resource ID: `9ef84268-d588-465a-a308-a864a43d0070`*), ingesting real daily arrival modal prices, maximum prices, and minimum prices across 550+ reporting centers in Indian states.
+> **Real Government Data Ingestion**: AgriPrice Detection System connects directly to the Government of India Open Data Platform (**data.gov.in**) AGMARKNET Mandi Price API (*Resource ID: `9ef84268-d588-465a-a308-a864a43d0070`*), ingesting daily arrival modal prices, maximum prices, and minimum prices across 550+ reporting centers in Indian states.
 
 ---
 
@@ -36,7 +34,7 @@
 - [Deployment on Streamlit Community Cloud](#-deployment-on-streamlit-community-cloud)
 - [ML Models Used](#-ml-models-used)
 - [Results & Evaluation](#-results--evaluation)
-- [Team & Institution](#-team--institution)
+- [Team & Authors](#-team--authors)
 - [License](#-license)
 
 ---
@@ -57,18 +55,18 @@ The Department of Consumer Affairs monitors the daily prices of 22 essential foo
 
 ### Goal
 
-Build an intelligent AI/ML prediction system that forecasts commodity prices 7 to 30 days in advance, enabling the government to make proactive buffer stock decisions, prevent price spikes, and protect consumer and farmer interests.
+Build an intelligent AI/ML prediction and detection system that forecasts commodity prices 7 to 30 days in advance, enabling the government to make proactive buffer stock decisions, prevent price spikes, and protect consumer and farmer interests.
 
 ---
 
 ## 🎯 Project Overview
 
-**AgriPrice AI** is an end-to-end machine learning pipeline that:
+**AgriPrice Detection System** is an end-to-end machine learning pipeline that:
 * 📥 **Ingests** daily price data from government reporting centres via the `data.gov.in` AGMARKNET API.
 * 🔄 **Processes** and cleans multi-source government datasets with robust outlier removal and lag extraction.
 * 📊 **Analyzes** historical price trends, seasonality, and market patterns across Indian states.
 * 🤖 **Predicts** commodity prices for the next 7, 14, and 30 days with 95% confidence intervals using SARIMA, ARIMA, and XGBoost.
-* 🚨 **Alerts** when prices are predicted to cross danger thresholds at both national and state levels.
+* 🚨 **Detects & Alerts** when prices are predicted to cross danger thresholds at both national and state levels.
 * 📈 **Visualizes** forecasts through a multi-tab interactive Streamlit dashboard with real-time sync controls.
 
 ---
@@ -100,7 +98,7 @@ Build an intelligent AI/ML prediction system that forecasts commodity prices 7 t
      (30-day forecast, CI bands, state-level alerts)
                          │
                          ▼
-     STREAMLIT COMMUNITY CLOUD INTERACTIVE DASHBOARD
+      STREAMLIT COMMUNITY CLOUD INTERACTIVE DASHBOARD
                 (app.py - Live Web App)
 ```
 
@@ -121,7 +119,7 @@ Build an intelligent AI/ML prediction system that forecasts commodity prices 7 t
 ## 📁 Project Structure
 
 ```
-AgriPrice-AI/
+AgriPrice_Detection_System/
 ├── main.py                     # Main pipeline orchestrator & CLI runner
 ├── app.py                      # Streamlit dashboard script
 ├── requirements.txt            # Python dependencies (Cloud compatible)
@@ -147,8 +145,8 @@ AgriPrice-AI/
 
 1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/ABHINAVJINDAL26/AgriPrice-AI-Commodity-Price-Prediction-System.git
-   cd AgriPrice-AI-Commodity-Price-Prediction-System
+   git clone https://github.com/madrewarparth/AgriPrice_Detection_System.git
+   cd AgriPrice_Detection_System
    ```
 
 2. **Create a Virtual Environment**:
@@ -215,7 +213,7 @@ python main.py fetch
 
 ## 🌐 Deployment on Streamlit Community Cloud
 
-Deploying AgriPrice AI live to the web takes under 3 minutes:
+Deploying AgriPrice Detection System live to the web takes under 3 minutes:
 
 ### Step 1: Push Code to GitHub
 Ensure all changes are committed and pushed to your GitHub repository:
@@ -228,7 +226,7 @@ git push origin main
 ### Step 2: Create App on Streamlit Cloud
 1. Go to [share.streamlit.io](https://share.streamlit.io) and log in with GitHub.
 2. Click **"New app"** (or **"Create app"**).
-3. Select your repository: `ABHINAVJINDAL26/AgriPrice-AI-Commodity-Price-Prediction-System`.
+3. Select your repository: `madrewarparth/AgriPrice_Detection_System`.
 4. Set the branch to `main`.
 5. Set the Main file path to `app.py`.
 
@@ -240,8 +238,6 @@ git push origin main
    DATA_GOV_RESOURCE_ID = "9ef84268-d588-465a-a308-a864a43d0070"
    ```
 3. Click **"Deploy!"**.
-
-Your application will be live at `https://<your-custom-subdomain>.streamlit.app`!
 
 ---
 
@@ -261,13 +257,13 @@ The pipeline outputs comparative performance metrics on real market test partiti
 
 ---
 
-## 👥 Team & Institution
+## 👥 Team & Authors
 
-* **Abhinav Jindal** (Team Lead) — *Lead Developer, Pipeline Orchestration, & ML Modeling*
-* **Parth Madrewar** — *Frontend Dashboard Developer & Data Analyst*
+* **Parth Madrewar** — *Lead Maintainer, Frontend Dashboard & Data Pipeline Developer*
+* **Abhinav Jindal** — *ML Modeling & Pipeline Developer*
 
 **Institution**: Lovely Professional University, Phagwara, Jalandhar, Punjab  
-**SIH 2024 Participation**
+**SIH 2024 Project**
 
 ---
 
