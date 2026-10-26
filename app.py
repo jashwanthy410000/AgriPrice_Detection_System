@@ -10,6 +10,42 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
+LANGUAGES = {
+    "English": {
+        "title": "AgriPrice AI",
+        "choose_commodity": "Choose Commodity",
+        "choose_region": "Select Region",
+        "compare_region": "Compare with Other Regions",
+        "forecast": "Forecast",
+        "price_trend": "Price Trend",
+        "policy_action": "Policy Action",
+        "current_price": "Current Price",
+        "predicted_price": "Predicted Price"
+    },
+    "Hindi": {
+        "title": "एग्रीप्राइस एआई",
+        "choose_commodity": "फसल चुनें",
+        "choose_region": "क्षेत्र चुनें",
+        "compare_region": "अन्य क्षेत्रों के साथ तुलना करें",
+        "forecast": "पूर्वानुमान",
+        "price_trend": "मूल्य प्रवृत्ति",
+        "policy_action": "नीति कार्रवाई",
+        "current_price": "वर्तमान कीमत",
+        "predicted_price": "पूर्वानुमानित कीमत"
+    },
+    "Marathi": {
+        "title": "अग्रिप्राइस एआय",
+        "choose_commodity": "पिक निवडा",
+        "choose_region": "प्रदेश निवडा",
+        "compare_region": "इतर प्रदेशांशी तुलना करा",
+        "forecast": "भविष्यवाणी",
+        "price_trend": "किंमत ट्रेंड",
+        "policy_action": "नीतीविषयक कृती",
+        "current_price": "सध्याची किंमत",
+        "predicted_price": "अंदाजे किंमत"
+    }
+}
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROCESSED_DATA = os.path.join(BASE_DIR, "data", "processed_data.csv")
 POLICY_ALERTS = os.path.join(BASE_DIR, "outputs", "policy_alerts.csv")
@@ -220,7 +256,13 @@ def sanitize_name(value: str) -> str:
 
 def fetch_live_data() -> tuple[bool, str]:
     try:
-        from src.fetch_real_data import fetch_and_save_real_data
+        if BASE_DIR not in sys.path:
+            sys.path.insert(0, BASE_DIR)
+        from importlib import import_module
+
+        fetch_and_save_real_data = import_module(
+            "src.fetch_real_data"
+        ).fetch_and_save_real_data
         df = fetch_and_save_real_data()
         return True, f"Successfully fetched and calibrated {len(df)} live records from data.gov.in AGMARKNET."
     except Exception as e:
@@ -258,8 +300,65 @@ if "Date" in processed_df.columns:
 if "Commodity" not in processed_df.columns and not processed_df.empty:
     processed_df["Commodity"] = "Unknown"
 
-commodities = sorted(processed_df["Commodity"].dropna().unique().tolist()) if not processed_df.empty else ["Gram", "Onion", "Potato", "Tomato", "Tur"]
+CROP_CATEGORIES = {
+    "Cereals": [
+        "Rice", "Paddy", "Wheat", "Maize", "Jowar",
+        "Bajra", "Ragi", "Barley", "Oats",
+        "Foxtail Millet", "Little Millet", "Kodo Millet",
+        "Barnyard Millet", "Proso Millet"
+    ],
 
+    "Pulses": [
+        "Gram", "Chickpea", "Tur", "Arhar", "Moong",
+        "Urad", "Masoor", "Peas", "Cowpea",
+        "Horse Gram", "Moth Bean", "Pigeon Pea", "Rajma"
+    ],
+
+    "Oilseeds": [
+        "Groundnut", "Soybean", "Mustard", "Rapeseed",
+        "Sunflower", "Sesame", "Castor", "Linseed",
+        "Safflower", "Niger Seed"
+    ],
+
+    "Vegetables": [
+        "Potato", "Onion", "Tomato", "Brinjal",
+        "Cabbage", "Cauliflower", "Okra", "Green Chilli",
+        "Capsicum", "Cucumber", "Carrot", "Radish",
+        "Spinach", "Pumpkin", "Bitter Gourd",
+        "Bottle Gourd", "Ridge Gourd", "Drumstick"
+    ],
+
+    "Fruits": [
+        "Mango", "Banana", "Grapes", "Apple", "Orange",
+        "Sweet Lime", "Pomegranate", "Guava", "Papaya",
+        "Watermelon", "Muskmelon", "Pineapple",
+        "Sapota", "Jackfruit", "Coconut", "Lemon"
+    ],
+
+    "Spices": [
+        "Turmeric", "Ginger", "Garlic", "Black Pepper",
+        "Cardamom", "Coriander", "Cumin", "Fenugreek",
+        "Red Chilli", "Clove", "Cinnamon", "Fennel"
+    ],
+
+    "Commercial Crops": [
+        "Cotton", "Sugarcane", "Jute", "Tobacco",
+        "Tea", "Coffee", "Rubber", "Arecanut", "Cashew"
+    ],
+
+    "Other Crops": [
+        "Sweet Potato", "Tapioca", "Yam",
+        "Fodder Sorghum", "Lucerne"
+    ]
+}
+
+all_crops = sorted(
+    {
+    crop
+    for crops_in_category in CROP_CATEGORIES.values()
+    for crop in crops_in_category
+}
+)
 commodity_icons = {
     "Onion": "🧅",
     "Potato": "🥔",
@@ -270,22 +369,46 @@ commodity_icons = {
 
 # Sidebar
 with st.sidebar:
-    st.markdown("<h3 style='color:#064E3B; margin-bottom:0.2rem;'>🌾 AgriPrice AI</h3>", unsafe_allow_html=True)
+    st.markdown(
+        "<h3 style='color:#064E3B; margin-bottom:0.2rem;'>🌾 AgriPrice AI</h3>",
+        unsafe_allow_html=True
+    )
     st.caption("AI-Powered Commodity Forecasting & Buffer Stock Advisory")
     st.markdown("---")
 
+    selected_language = st.selectbox(
+        "Language / भाषा / भाषा",
+        list(LANGUAGES.keys())
+    )
+    texts = LANGUAGES[selected_language]
+
+    # Select state
+    selected_region = st.selectbox(
+        "🌍 Select State",
+        ["All States"] + sorted(
+          processed_df["State"].dropna().unique().tolist()  
+        )
+    )
+
+    # Select crop category
+    selected_category = st.selectbox(
+        "🌾 Choose Crop Category",
+        list(CROP_CATEGORIES.keys())
+    )
+
+    # Select crop
     selected_commodity = st.selectbox(
-        "Choose Commodity",
-        commodities,
-        format_func=lambda x: f"{commodity_icons.get(x, '📦')} {x}",
+        "🌱 Choose Commodity",
+        CROP_CATEGORIES[selected_category],
         index=0
     )
 
-    st.markdown("<div style='margin-top:0.8rem;'></div>", unsafe_allow_html=True)
-    st.caption("⚡ **Live Operations**")
 
-    col_btn1, col_btn2 = st.columns(2)
-    with col_btn1:
+st.markdown("<div style='margin-top:0.8rem;'></div>", unsafe_allow_html=True)
+st.caption("⚡ **Live Operations**")
+
+col_btn1, col_btn2 = st.columns(2)
+with col_btn1:
         if st.button("🔄 Sync API", use_container_width=True, help="Fetch latest mandi prices from data.gov.in"):
             with st.spinner("Connecting to AGMARKNET..."):
                 ok, msg = fetch_live_data()
@@ -294,7 +417,7 @@ with st.sidebar:
             else:
                 st.warning(msg)
 
-    with col_btn2:
+with col_btn2:
         if st.button("⚡ Run Pipeline", use_container_width=True, type="primary", help="Re-train models"):
             with st.spinner("Running full pipeline..."):
                 ok, logs = run_pipeline()
@@ -305,8 +428,8 @@ with st.sidebar:
                 st.error("Failed.")
                 st.text_area("Logs", logs, height=180)
 
-    st.markdown("---")
-    st.markdown(
+st.markdown("---")
+st.markdown(
         """
         <div style='font-size:0.8rem; color:#64748B; line-height:1.5;'>
           <b>🏛️ Official Data Source:</b><br/>
@@ -342,7 +465,14 @@ if processed_df.empty or alerts_df.empty or summary_df.empty:
     st.stop()
 
 # Selected Commodity Details
-commodity_data = processed_df[processed_df["Commodity"] == selected_commodity].copy()
+commodity_data = processed_df[
+    processed_df["Commodity"] == selected_commodity
+].copy()
+
+if selected_region != "All States":
+    commodity_data = commodity_data[
+        commodity_data["State"] == selected_region
+    ]
 alert_row = alerts_df[alerts_df["Commodity"] == selected_commodity]
 sarima_summary = summary_df[(summary_df["Commodity"] == selected_commodity) & (summary_df["Model"] == "SARIMA")]
 

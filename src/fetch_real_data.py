@@ -39,11 +39,15 @@ API_COMMODITY_QUERIES = [
     ("Red gram/Arhar/Tur(whole)", "Tur"),
     ("Arhar (Tur/Red Gram)(Whole)", "Tur"),
     ("Green Gram(Moong)(Whole)", "Gram"),
+    ("Chilli", "Chilli"),
+    ("Cotton", "Cotton"),
+    ("Wheat", "Wheat"),
+    ("Maize", "Corn"),
+    ("Corn", "Corn"),
+    ("Rice", "Rice"),
     ("Black Gram(Urd Beans)(Whole)", "Tur")
 ]
-
-TARGET_COMMODITIES = ["Onion", "Potato", "Tomato", "Gram", "Tur"]
-
+TARGET_COMMODITIES = ["Onion", "Potato", "Tomato", "Gram", "Tur", "Chilli", "Cotton", "Wheat", "Corn", "Rice"]
 
 def get_api_key() -> str:
     """Retrieve API key from Streamlit secrets, environment variable, or fallback default."""
